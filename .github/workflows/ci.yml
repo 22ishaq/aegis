@@ -17,7 +17,7 @@ jobs:
         include:
           - { name: macOS clang, os: macos-latest, cc: clang, cxx: clang++, werror: "ON" }
           - { name: Linux clang, os: ubuntu-latest, cc: clang, cxx: clang++, werror: "ON" }
-          - { name: Linux gcc, os: ubuntu-latest, cc: gcc, cxx: g++, werror: "OFF" }
+          - { name: Linux gcc, os: ubuntu-latest, cc: gcc, cxx: g++, werror: "ON" }
     steps:
       - uses: actions/checkout@v4
       - name: Install Ninja
