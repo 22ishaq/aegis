@@ -1,0 +1,19 @@
+{
+  "compiler": "clang 21.0.0 (clang-2100.1.1.101)",
+  "hardware_threads": 15,
+  "events": 2e+06,
+  "sha256_mb_per_s": 438.226,
+  "features_ns_per_txn": 131.911,
+  "mlp_ns_per_inference": 140.477,
+  "explain_ns": 431.584,
+  "scorer_ns_per_txn": 292.193,
+  "scorer_flag_rate": 0.0266915,
+  "pipeline_throughput": 3.00173e+06,
+  "service_p50_ns": 292,
+  "service_p99_ns": 744,
+  "service_p999_ns": 872,
+  "paced_rate": 1e+06,
+  "e2e_p50_ns": 420,
+  "e2e_p99_ns": 920,
+  "e2e_p999_ns": 7360
+}

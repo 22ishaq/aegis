@@ -1,0 +1,37 @@
+[project]
+name = "aegis"
+version = "1.0.0"
+description = "Real-time financial-crime detection: C++20 scoring engine, from-scratch neural network, Claude investigator, tamper-evident audit chain."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = ["numpy>=2.0", "fastapi>=0.110", "uvicorn[standard]>=0.29", "anthropic>=1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "httpx>=0.27", "pybind11>=2.12", "ruff>=0.5"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 135
+target-version = "py310"
+src = ["python", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+ignore = ["S101", "S311", "E741", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "E501"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.setuptools.package-data]
+aegis = ["service/static/*"]

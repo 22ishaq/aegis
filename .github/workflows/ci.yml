@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  cpp:
+    name: C++ (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: macOS clang, os: macos-latest, cc: clang, cxx: clang++, werror: "ON" }
+          - { name: Linux clang, os: ubuntu-latest, cc: clang, cxx: clang++, werror: "ON" }
+          - { name: Linux gcc, os: ubuntu-latest, cc: gcc, cxx: g++, werror: "OFF" }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ninja
+        run: ${{ runner.os == 'Linux' && 'sudo apt-get update && sudo apt-get install -y ninja-build' || 'brew install ninja' }}
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DAEGIS_PYTHON=OFF -DAEGIS_WERROR=${{ matrix.werror }}
+        env: { CC: "${{ matrix.cc }}", CXX: "${{ matrix.cxx }}" }
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+      - name: Benchmark (smoke)
+        run: ./build/aegis_bench --n 200000
+
+  sanitizers:
+    name: Sanitizer (${{ matrix.sanitizer }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: ["address,undefined", "thread"]
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build
+      # Recent kernels randomise mmap addresses more than TSan's shadow memory supports.
+      - run: sudo sysctl vm.mmap_rnd_bits=28
+      - name: Build and test
+        env: { CC: clang, CXX: clang++, UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1" }
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DAEGIS_PYTHON=OFF -DAEGIS_SANITIZE=${{ matrix.sanitizer }}
+          cmake --build build
+          ./build/aegis_tests
+
+  python:
+    name: Python tests + lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get update && sudo apt-get install -y ninja-build
+      - name: Install dependencies
+        run: pip install numpy pybind11 fastapi "uvicorn[standard]" anthropic pytest httpx ruff
+      - name: Build extension module
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPython_EXECUTABLE="$(which python)"
+          cmake --build build --target _core
+      - name: Lint
+        run: ruff check python tests scripts
+      - name: Test
+        run: python -m pytest
+      - name: Verify the committed model's integrity
+        run: PYTHONPATH=python python -c "from aegis import _core; m = _core.Mlp.load('models/aegis.model', 'aegis-dev-model-signing-key-CHANGE-ME'); print('model OK', m.fingerprint)"
+      - name: Security demos
+        run: |
+          python scripts/demo_tamper.py
+          python scripts/demo_injection.py

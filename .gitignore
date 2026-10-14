@@ -1,0 +1,28 @@
+# Build outputs
+build/
+build-*/
+*.so
+*.dylib
+*.o
+compile_commands.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Runtime data (regenerate with `make train` / `make serve`)
+data/
+
+# Secrets: never commit real keys
+.env
+*.key
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+.claude/

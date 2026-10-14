@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aegis Console</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 4 7v8c0 7.5 5.1 13.4 12 15 6.9-1.6 12-7.5 12-15V7z' fill='%2334d399'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <div id="gate" class="gate" hidden>
+    <form id="gate-form" class="gate-card">
+      <h1><span class="logo" aria-hidden="true"></span>Aegis</h1>
+      <p>Enter an API key. The server prints a viewer and an analyst key when it starts.</p>
+      <label for="gate-key">API key</label>
+      <input id="gate-key" type="password" autocomplete="off" spellcheck="false" required>
+      <p id="gate-error" class="error" role="alert"></p>
+      <button type="submit">Connect</button>
+    </form>
+  </div>
+
+  <header class="top">
+    <div class="brand"><span class="logo" aria-hidden="true"></span>Aegis <span class="muted">real-time fraud console</span></div>
+    <dl class="facts">
+      <div><dt>Model</dt><dd id="m-model">-</dd></div>
+      <div><dt>Review at</dt><dd id="m-review">-</dd></div>
+      <div><dt>Block at</dt><dd id="m-block">-</dd></div>
+      <div><dt>Investigator</dt><dd id="m-investigator">-</dd></div>
+      <div><dt>Audit chain</dt><dd id="m-audit">-</dd></div>
+    </dl>
+    <button id="logout" class="ghost" type="button">Sign out</button>
+  </header>
+
+  <section class="kpis" aria-label="Live metrics">
+    <div class="kpi"><span>Transactions</span><strong id="k-processed">0</strong></div>
+    <div class="kpi"><span>Review</span><strong id="k-reviews" class="review">0</strong></div>
+    <div class="kpi"><span>Blocked</span><strong id="k-blocks" class="block">0</strong></div>
+    <div class="kpi"><span>Scoring p50</span><strong id="k-p50">-</strong></div>
+    <div class="kpi"><span>Scoring p99</span><strong id="k-p99">-</strong></div>
+    <div class="kpi"><span>Stream</span><strong id="k-conn">offline</strong></div>
+  </section>
+
+  <main class="grid">
+    <section class="panel" aria-labelledby="h-stream">
+      <h2 id="h-stream">Live transactions</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>Account</th><th class="num">Amount</th><th>Category</th><th>Channel</th><th>Risk</th><th>Decision</th></tr></thead>
+          <tbody id="stream"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="h-alerts">
+      <h2 id="h-alerts">Alert queue</h2>
+      <ul id="alerts" class="alerts"></ul>
+    </section>
+
+    <section class="panel detail" aria-labelledby="h-detail">
+      <h2 id="h-detail">Case</h2>
+      <div id="detail" class="empty">Select an alert to open the case.</div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
